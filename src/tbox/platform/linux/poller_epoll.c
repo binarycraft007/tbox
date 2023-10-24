@@ -22,7 +22,12 @@
  * includes
  */
 #include "prefix.h"
-#include <sys/epoll.h>
+#if defined(TB_CONFIG_OS_LINUX)
+#   include <sys/epoll.h>
+#elif defined(TB_CONFIG_OS_WINDOWS)
+#   include <windows.h>
+#   include "wepoll.h"
+#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -78,8 +83,12 @@ static tb_size_t tb_poller_epoll_maxfds()
         maxfds = rl.rlim_cur;
 #endif
 
+#ifdef TB_CONFIG_OS_LINUX
     // attempt to get it from sysconf
     if (!maxfds) maxfds = sysconf(_SC_OPEN_MAX);
+#else
+    maxfds = 1024;
+#endif
 
     // ok?
     return maxfds;
@@ -139,13 +148,15 @@ static tb_bool_t tb_poller_epoll_insert(tb_poller_t* self, tb_poller_object_ref_
     struct epoll_event e = {0};
     if (events & TB_POLLER_EVENT_RECV) e.events |= EPOLLIN;
     if (events & TB_POLLER_EVENT_SEND) e.events |= EPOLLOUT;
+#ifdef EPOLLET
     if (events & TB_POLLER_EVENT_CLEAR)
     {
         e.events |= EPOLLET;
 #ifdef EPOLLRDHUP
         e.events |= EPOLLRDHUP;
-#endif
+#endif // EPOLLRDHUP
     }
+#endif // EPOLLET
 #ifdef EPOLLONESHOT
     if (events & TB_POLLER_EVENT_ONESHOT) e.events |= EPOLLONESHOT;
 #else
@@ -204,13 +215,15 @@ static tb_bool_t tb_poller_epoll_modify(tb_poller_t* self, tb_poller_object_ref_
     struct epoll_event e = {0};
     if (events & TB_POLLER_EVENT_RECV) e.events |= EPOLLIN;
     if (events & TB_POLLER_EVENT_SEND) e.events |= EPOLLOUT;
+#ifdef EPOLLET
     if (events & TB_POLLER_EVENT_CLEAR)
     {
         e.events |= EPOLLET;
 #ifdef EPOLLRDHUP
         e.events |= EPOLLRDHUP;
-#endif
+#endif // EPOLLRDHUP
     }
+#endif // EPOLLET
 #ifdef EPOLLONESHOT
     if (events & TB_POLLER_EVENT_ONESHOT) e.events |= EPOLLONESHOT;
 #else
@@ -360,10 +373,12 @@ tb_poller_t* tb_poller_epoll_init()
         poller->base.insert = tb_poller_epoll_insert;
         poller->base.remove = tb_poller_epoll_remove;
         poller->base.modify = tb_poller_epoll_modify;
+        poller->base.supported_events = TB_POLLER_EVENT_EALL;
 #ifdef EPOLLONESHOT
-        poller->base.supported_events = TB_POLLER_EVENT_EALL | TB_POLLER_EVENT_CLEAR | TB_POLLER_EVENT_ONESHOT;
-#else
-        poller->base.supported_events = TB_POLLER_EVENT_EALL | TB_POLLER_EVENT_CLEAR;
+        poller->base.supported_events |= TB_POLLER_EVENT_ONESHOT;
+#endif
+#ifdef EPOLLET
+        poller->base.supported_events |= TB_POLLER_EVENT_CLEAR;
 #endif
 
         // init poller data

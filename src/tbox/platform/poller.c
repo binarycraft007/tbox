@@ -41,8 +41,8 @@
 #       include "windows/poller_iocp.c"
 #       define TB_POLLER_ENABLE_IOCP
 #   else
-#       include "posix/poller_select.c"
-#       define TB_POLLER_ENABLE_SELECT
+#       include "linux/poller_epoll.c"
+#       define TB_POLLER_ENABLE_EPOLL
 #   endif
 #elif defined(TB_CONFIG_POSIX_HAVE_EPOLL_CREATE) \
     && defined(TB_CONFIG_POSIX_HAVE_EPOLL_WAIT)
