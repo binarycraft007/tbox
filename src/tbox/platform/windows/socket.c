@@ -25,7 +25,7 @@
 #include "../socket.h"
 #include "../file.h"
 #include "interface/interface.h"
-#include "iocp_object.h"
+//#include "iocp_object.h"
 #include "socket_pool.h"
 #include "../posix/sockaddr.h"
 #ifdef TB_CONFIG_MODULE_HAVE_COROUTINE
@@ -425,11 +425,11 @@ tb_long_t tb_socket_connect(tb_socket_ref_t sock, tb_ipaddr_ref_t addr)
     tb_assert_and_check_return_val(sock && addr, -1);
     tb_assert_and_check_return_val(!tb_ipaddr_is_empty(addr), -1);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to connect if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_CONN);
-    if (iocp_object) return tb_iocp_object_connect(iocp_object, addr);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to connect if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_CONN);
+//    if (iocp_object) return tb_iocp_object_connect(iocp_object, addr);
+//#endif
 
     // load addr
     tb_size_t n = 0;
@@ -507,11 +507,11 @@ tb_socket_ref_t tb_socket_accept(tb_socket_ref_t sock, tb_ipaddr_ref_t addr)
     // check
     tb_assert_and_check_return_val(sock, tb_null);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to accept if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_ACPT);
-    if (iocp_object) return tb_iocp_object_accept(iocp_object, addr);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to accept if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_ACPT);
+//    if (iocp_object) return tb_iocp_object_accept(iocp_object, addr);
+//#endif
 
     // done
     tb_bool_t       ok = tb_false;
@@ -658,10 +658,10 @@ tb_bool_t tb_socket_exit(tb_socket_ref_t sock)
     if ((scheduler_io = tb_lo_scheduler_io_self()) && tb_lo_scheduler_io_cancel((tb_lo_scheduler_io_ref_t)scheduler_io, &object)) {}
 #endif
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // remove iocp object for this socket if exists
-    tb_iocp_object_remove(&object);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // remove iocp object for this socket if exists
+//    tb_iocp_object_remove(&object);
+//#endif
 
     // close it
     tb_bool_t ok = !tb_ws2_32()->closesocket(tb_sock2fd(sock))? tb_true : tb_false;
@@ -680,11 +680,11 @@ tb_long_t tb_socket_recv(tb_socket_ref_t sock, tb_byte_t* data, tb_size_t size)
     tb_assert_and_check_return_val(sock && data, -1);
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to recv data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
-    if (iocp_object) return tb_iocp_object_recv(iocp_object, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to recv data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
+//    if (iocp_object) return tb_iocp_object_recv(iocp_object, data, size);
+//#endif
 
     // recv
     tb_long_t real = tb_ws2_32()->recv(tb_sock2fd(sock), (tb_char_t*)data, (tb_int_t)size, 0);
@@ -707,11 +707,11 @@ tb_long_t tb_socket_send(tb_socket_ref_t sock, tb_byte_t const* data, tb_size_t 
     tb_assert_and_check_return_val(sock && data, -1);
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to send data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_send(iocp_object, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to send data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_send(iocp_object, data, size);
+//#endif
 
     // recv
     tb_long_t real = tb_ws2_32()->send(tb_sock2fd(sock), (tb_char_t const*)data, (tb_int_t)size, 0);
@@ -733,11 +733,11 @@ tb_hong_t tb_socket_sendf(tb_socket_ref_t sock, tb_file_ref_t file, tb_hize_t of
     // check
     tb_assert_and_check_return_val(sock && file && size, -1);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to send file data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_sendf(iocp_object, file, offset, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to send file data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_sendf(iocp_object, file, offset, size);
+//#endif
 
     // read data
     tb_byte_t data[8192];
@@ -755,11 +755,11 @@ tb_long_t tb_socket_urecv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_byte_t*
     // no size?
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to urecv data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
-    if (iocp_object) return tb_iocp_object_urecv(iocp_object, addr, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to urecv data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
+//    if (iocp_object) return tb_iocp_object_urecv(iocp_object, addr, data, size);
+//#endif
 
     // recv
 	struct sockaddr_storage d = {0};
@@ -788,11 +788,11 @@ tb_long_t tb_socket_usend(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_byte_t 
     // no size?
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to usend data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_usend(iocp_object, addr, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to usend data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_usend(iocp_object, addr, data, size);
+//#endif
 
     // load addr
     tb_size_t n = 0;
@@ -811,184 +811,184 @@ tb_long_t tb_socket_usend(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_byte_t 
     // error
     return -1;
 }
-#ifndef TB_CONFIG_MICRO_ENABLE
-tb_long_t tb_socket_recvv(tb_socket_ref_t sock, tb_iovec_t const* list, tb_size_t size)
-{
-    // check
-    tb_assert_and_check_return_val(sock && list && size, -1);
-
-    // attempt to use iocp object to recv data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
-    if (iocp_object) return tb_iocp_object_recvv(iocp_object, list, size);
-
-    // walk read
-    tb_size_t i = 0;
-    tb_size_t read = 0;
-    for (i = 0; i < size; i++)
-    {
-        // the data & size
-        tb_byte_t*  data = list[i].data;
-        tb_size_t   need = list[i].size;
-        tb_check_break(data && need);
-
-        // read it
-        tb_long_t real = tb_socket_recv(sock, data, need);
-
-        // full? next it
-        if (real == need)
-        {
-            read += real;
-            continue ;
-        }
-
-        // failed?
-        tb_check_return_val(real >= 0, -1);
-
-        // ok?
-        if (real > 0) read += real;
-
-        // end
-        break;
-    }
-
-    // ok?
-    return read;
-}
-tb_long_t tb_socket_sendv(tb_socket_ref_t sock, tb_iovec_t const* list, tb_size_t size)
-{
-    // check
-    tb_assert_and_check_return_val(sock && list && size, -1);
-
-    // attempt to use iocp object to send data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_sendv(iocp_object, list, size);
-
-    // walk writ
-    tb_size_t i = 0;
-    tb_size_t writ = 0;
-    for (i = 0; i < size; i++)
-    {
-        // the data & size
-        tb_byte_t*  data = list[i].data;
-        tb_size_t   need = list[i].size;
-        tb_check_break(data && need);
-
-        // writ it
-        tb_long_t real = tb_socket_send(sock, data, need);
-
-        // full? next it
-        if (real == need)
-        {
-            writ += real;
-            continue ;
-        }
-
-        // failed?
-        tb_check_return_val(real >= 0, -1);
-
-        // ok?
-        if (real > 0) writ += real;
-
-        // end
-        break;
-    }
-
-    // ok?
-    return writ;
-}
-tb_long_t tb_socket_urecvv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_iovec_t const* list, tb_size_t size)
-{
-    // check
-    tb_assert_and_check_return_val(sock && list && size, -1);
-
-    // attempt to use iocp object to recv data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_urecvv(iocp_object, addr, list, size);
-
-    // done
-    tb_size_t               i = 0;
-	struct sockaddr_storage d = {0};
-    tb_int_t                n = sizeof(d);
-    tb_size_t               read = 0;
-    for (i = 0; i < size; i++)
-    {
-        // the data and size
-        tb_byte_t*  data = list[i].data;
-        tb_size_t   need = list[i].size;
-        tb_check_break(data && need);
-
-        // read it
-        tb_long_t real = tb_ws2_32()->recvfrom(tb_sock2fd(sock), (tb_char_t*)data, (tb_int_t)need, 0, (struct sockaddr*)&d, &n);
-
-        // full? next it
-        if (real == need)
-        {
-            read += real;
-            continue ;
-        }
-
-        // failed?
-        tb_check_return_val(real >= 0, -1);
-
-        // ok?
-        if (real > 0) read += real;
-
-        // end
-        break;
-    }
-
-    // save address
-    if (addr) tb_sockaddr_save(addr, &d);
-
-    // ok?
-    return read;
-}
-tb_long_t tb_socket_usendv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_iovec_t const* list, tb_size_t size)
-{
-    // check
-    tb_assert_and_check_return_val(sock && addr && list && size, -1);
-    tb_assert_and_check_return_val(!tb_ipaddr_is_empty(addr), -1);
-
-    // attempt to use iocp object to send data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_usendv(iocp_object, addr, list, size);
-
-    // load addr
-    tb_size_t n = 0;
-	struct sockaddr_storage d;
-    if (!(n = tb_sockaddr_load(&d, addr))) return -1;
-
-    // done
-    tb_size_t i = 0;
-    tb_size_t writ = 0;
-    for (i = 0; i < size; i++)
-    {
-        // the data and size
-        tb_byte_t*  data = list[i].data;
-        tb_size_t   need = list[i].size;
-        tb_check_break(data && need);
-
-        // writ it
-        tb_long_t real = tb_ws2_32()->sendto(tb_sock2fd(sock), (tb_char_t const*)data, (tb_int_t)need, 0, (struct sockaddr*)&d, (tb_int_t)n);
-
-        // full? next it
-        if (real == need)
-        {
-            writ += real;
-            continue ;
-        }
-
-        // failed?
-        tb_check_return_val(real >= 0, -1);
-
-        // ok?
-        if (real > 0) writ += real;
-
-        // end
-        break;
-    }
-
-    // ok?
-    return writ;
-}
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//tb_long_t tb_socket_recvv(tb_socket_ref_t sock, tb_iovec_t const* list, tb_size_t size)
+//{
+//    // check
+//    tb_assert_and_check_return_val(sock && list && size, -1);
+//
+//    // attempt to use iocp object to recv data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_RECV);
+//    if (iocp_object) return tb_iocp_object_recvv(iocp_object, list, size);
+//
+//    // walk read
+//    tb_size_t i = 0;
+//    tb_size_t read = 0;
+//    for (i = 0; i < size; i++)
+//    {
+//        // the data & size
+//        tb_byte_t*  data = list[i].data;
+//        tb_size_t   need = list[i].size;
+//        tb_check_break(data && need);
+//
+//        // read it
+//        tb_long_t real = tb_socket_recv(sock, data, need);
+//
+//        // full? next it
+//        if (real == need)
+//        {
+//            read += real;
+//            continue ;
+//        }
+//
+//        // failed?
+//        tb_check_return_val(real >= 0, -1);
+//
+//        // ok?
+//        if (real > 0) read += real;
+//
+//        // end
+//        break;
+//    }
+//
+//    // ok?
+//    return read;
+//}
+//tb_long_t tb_socket_sendv(tb_socket_ref_t sock, tb_iovec_t const* list, tb_size_t size)
+//{
+//    // check
+//    tb_assert_and_check_return_val(sock && list && size, -1);
+//
+//    // attempt to use iocp object to send data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_sendv(iocp_object, list, size);
+//
+//    // walk writ
+//    tb_size_t i = 0;
+//    tb_size_t writ = 0;
+//    for (i = 0; i < size; i++)
+//    {
+//        // the data & size
+//        tb_byte_t*  data = list[i].data;
+//        tb_size_t   need = list[i].size;
+//        tb_check_break(data && need);
+//
+//        // writ it
+//        tb_long_t real = tb_socket_send(sock, data, need);
+//
+//        // full? next it
+//        if (real == need)
+//        {
+//            writ += real;
+//            continue ;
+//        }
+//
+//        // failed?
+//        tb_check_return_val(real >= 0, -1);
+//
+//        // ok?
+//        if (real > 0) writ += real;
+//
+//        // end
+//        break;
+//    }
+//
+//    // ok?
+//    return writ;
+//}
+//tb_long_t tb_socket_urecvv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_iovec_t const* list, tb_size_t size)
+//{
+//    // check
+//    tb_assert_and_check_return_val(sock && list && size, -1);
+//
+//    // attempt to use iocp object to recv data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_urecvv(iocp_object, addr, list, size);
+//
+//    // done
+//    tb_size_t               i = 0;
+//	struct sockaddr_storage d = {0};
+//    tb_int_t                n = sizeof(d);
+//    tb_size_t               read = 0;
+//    for (i = 0; i < size; i++)
+//    {
+//        // the data and size
+//        tb_byte_t*  data = list[i].data;
+//        tb_size_t   need = list[i].size;
+//        tb_check_break(data && need);
+//
+//        // read it
+//        tb_long_t real = tb_ws2_32()->recvfrom(tb_sock2fd(sock), (tb_char_t*)data, (tb_int_t)need, 0, (struct sockaddr*)&d, &n);
+//
+//        // full? next it
+//        if (real == need)
+//        {
+//            read += real;
+//            continue ;
+//        }
+//
+//        // failed?
+//        tb_check_return_val(real >= 0, -1);
+//
+//        // ok?
+//        if (real > 0) read += real;
+//
+//        // end
+//        break;
+//    }
+//
+//    // save address
+//    if (addr) tb_sockaddr_save(addr, &d);
+//
+//    // ok?
+//    return read;
+//}
+//tb_long_t tb_socket_usendv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_iovec_t const* list, tb_size_t size)
+//{
+//    // check
+//    tb_assert_and_check_return_val(sock && addr && list && size, -1);
+//    tb_assert_and_check_return_val(!tb_ipaddr_is_empty(addr), -1);
+//
+//    // attempt to use iocp object to send data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_sock(sock, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_usendv(iocp_object, addr, list, size);
+//
+//    // load addr
+//    tb_size_t n = 0;
+//	struct sockaddr_storage d;
+//    if (!(n = tb_sockaddr_load(&d, addr))) return -1;
+//
+//    // done
+//    tb_size_t i = 0;
+//    tb_size_t writ = 0;
+//    for (i = 0; i < size; i++)
+//    {
+//        // the data and size
+//        tb_byte_t*  data = list[i].data;
+//        tb_size_t   need = list[i].size;
+//        tb_check_break(data && need);
+//
+//        // writ it
+//        tb_long_t real = tb_ws2_32()->sendto(tb_sock2fd(sock), (tb_char_t const*)data, (tb_int_t)need, 0, (struct sockaddr*)&d, (tb_int_t)n);
+//
+//        // full? next it
+//        if (real == need)
+//        {
+//            writ += real;
+//            continue ;
+//        }
+//
+//        // failed?
+//        tb_check_return_val(real >= 0, -1);
+//
+//        // ok?
+//        if (real > 0) writ += real;
+//
+//        // end
+//        break;
+//    }
+//
+//    // ok?
+//    return writ;
+//}
+//#endif

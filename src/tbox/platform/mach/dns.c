@@ -29,7 +29,7 @@
 #include "../../stream/stream.h"
 #include "../../network/network.h"
 #include "../impl/dns.h"
-#include <resolv.h>
+//#include <resolv.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -39,7 +39,7 @@
  */
 
 // the res_ninit func type
-typedef tb_int_t (*tb_dns_res_ninit_func_t)(res_state);
+//typedef tb_int_t (*tb_dns_res_ninit_func_t)(res_state);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -47,36 +47,36 @@ typedef tb_int_t (*tb_dns_res_ninit_func_t)(res_state);
 tb_bool_t tb_dns_init_env()
 {
     // done
-    tb_size_t           count = 0;
-    tb_dynamic_ref_t    library = tb_dynamic_init("libresolv.dylib");
-    if (library)
-    {
-        // the res_ninit func
-        tb_dns_res_ninit_func_t pres_ninit = (tb_dns_res_ninit_func_t)tb_dynamic_func(library, "res_9_ninit");
-        if (pres_ninit)
-        {
-            // init state
-            struct __res_state state;
-            if (!pres_ninit(&state))
-            {
-                // walk it
-                tb_size_t i = 0;
-                for (i = 0; i < state.nscount; i++, count++)
-                {
-                    // the address
-                    tb_char_t const* addr = inet_ntoa(state.nsaddr_list[i].sin_addr);
-                    tb_assert_and_check_continue(addr);
+    //tb_size_t           count = 0;
+    //tb_dynamic_ref_t    library = tb_dynamic_init("libresolv.dylib");
+    //if (library)
+    //{
+    //    // the res_ninit func
+    //    tb_dns_res_ninit_func_t pres_ninit = (tb_dns_res_ninit_func_t)tb_dynamic_func(library, "res_9_ninit");
+    //    if (pres_ninit)
+    //    {
+    //        // init state
+    //        struct __res_state state;
+    //        if (!pres_ninit(&state))
+    //        {
+    //            // walk it
+    //            tb_size_t i = 0;
+    //            for (i = 0; i < state.nscount; i++, count++)
+    //            {
+    //                // the address
+    //                tb_char_t const* addr = inet_ntoa(state.nsaddr_list[i].sin_addr);
+    //                tb_assert_and_check_continue(addr);
 
-                    // trace
-                    tb_trace_d("addr: %s", addr);
+    //                // trace
+    //                tb_trace_d("addr: %s", addr);
 
-                    // add address
-                    tb_dns_server_add(addr);
-                }
-            }
-        }
-    }
-
+    //                // add address
+    //                tb_dns_server_add(addr);
+    //            }
+    //        }
+    //    }
+    //}
+    tb_dns_server_add("8.8.8.8");
     // ok
     return tb_true;
 }

@@ -26,7 +26,7 @@
 #include "../pipe.h"
 #include "../file.h"
 #include "../atomic.h"
-#include "iocp_object.h"
+//#include "iocp_object.h"
 #ifdef TB_CONFIG_MODULE_HAVE_COROUTINE
 #   include "../../coroutine/coroutine.h"
 #   include "../../coroutine/impl/impl.h"
@@ -285,11 +285,11 @@ tb_bool_t tb_pipe_file_init_pair(tb_pipe_file_ref_t pair[2], tb_size_t mode[2], 
 }
 tb_long_t tb_pipe_file_connect(tb_pipe_file_ref_t self)
 {
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to read data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_CONN);
-    if (iocp_object) return tb_iocp_object_connect_pipe(iocp_object);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to read data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_CONN);
+//    if (iocp_object) return tb_iocp_object_connect_pipe(iocp_object);
+//#endif
     return tb_pipe_file_connect_direct(self);
 }
 tb_bool_t tb_pipe_file_exit(tb_pipe_file_ref_t self)
@@ -315,10 +315,10 @@ tb_bool_t tb_pipe_file_exit(tb_pipe_file_ref_t self)
     if ((scheduler_io = tb_lo_scheduler_io_self()) && tb_lo_scheduler_io_cancel((tb_lo_scheduler_io_ref_t)scheduler_io, &object)) {}
 #endif
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // remove iocp object for this pipe file if exists
-    tb_iocp_object_remove(&object);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // remove iocp object for this pipe file if exists
+//    tb_iocp_object_remove(&object);
+//#endif
 
     // disconnect the named pipe
     if (file->connected && file->pipe) DisconnectNamedPipe(file->pipe);
@@ -346,11 +346,11 @@ tb_long_t tb_pipe_file_read(tb_pipe_file_ref_t self, tb_byte_t* data, tb_size_t 
     tb_assert_and_check_return_val(file && file->pipe && data, -1);
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to read data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_RECV);
-    if (iocp_object) return tb_iocp_object_read(iocp_object, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to read data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_RECV);
+//    if (iocp_object) return tb_iocp_object_read(iocp_object, data, size);
+//#endif
 
     // has the completed result?
     if (file->real)
@@ -391,11 +391,11 @@ tb_long_t tb_pipe_file_write(tb_pipe_file_ref_t self, tb_byte_t const* data, tb_
     tb_assert_and_check_return_val(file && file->pipe && data, -1);
     tb_check_return_val(size, 0);
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-    // attempt to use iocp object to read data if exists
-    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_SEND);
-    if (iocp_object) return tb_iocp_object_write(iocp_object, data, size);
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//    // attempt to use iocp object to read data if exists
+//    tb_iocp_object_ref_t iocp_object = tb_iocp_object_get_or_new_from_pipe(self, TB_POLLER_EVENT_SEND);
+//    if (iocp_object) return tb_iocp_object_write(iocp_object, data, size);
+//#endif
 
     // has the completed result?
     if (file->real)

@@ -38,8 +38,8 @@
  */
 #if defined(TB_CONFIG_OS_WINDOWS)
 #   ifndef TB_CONFIG_MICRO_ENABLE
-#       include "windows/poller_iocp.c"
-#       define TB_POLLER_ENABLE_IOCP
+#       include "linux/poller_epoll.c"
+#       define TB_POLLER_ENABLE_EPOLL
 #   else
 #       include "linux/poller_epoll.c"
 #       define TB_POLLER_ENABLE_EPOLL
@@ -59,25 +59,25 @@
 #   define TB_POLLER_ENABLE_SELECT
 #endif
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-#   if defined(TB_CONFIG_OS_WINDOWS)
-#       include "windows/poller_process.c"
-#       define TB_POLLER_ENABLE_PROCESS
-#   elif defined(TB_CONFIG_POSIX_HAVE_WAITPID) && defined(TB_CONFIG_LIBC_HAVE_SIGNAL)
-#       include "posix/poller_process.c"
-#       define TB_POLLER_ENABLE_PROCESS
-#   endif
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//#   if defined(TB_CONFIG_OS_WINDOWS)
+//#       include "windows/poller_process.c"
+//#       define TB_POLLER_ENABLE_PROCESS
+//#   elif defined(TB_CONFIG_POSIX_HAVE_WAITPID) && defined(TB_CONFIG_LIBC_HAVE_SIGNAL)
+//#       include "posix/poller_process.c"
+//#       define TB_POLLER_ENABLE_PROCESS
+//#   endif
+//#endif
 
-#ifndef TB_CONFIG_MICRO_ENABLE
-#   if defined(TB_CONFIG_OS_WINDOWS) || \
-        defined(TB_CONFIG_LINUX_HAVE_INOTIFY_INIT) || \
-        defined(TB_CONFIG_OS_MACOSX) || \
-        defined(TB_CONFIG_OS_BSD)
-#       include "impl/poller_fwatcher.c"
-#       define TB_POLLER_ENABLE_FWATCHER
-#   endif
-#endif
+//#ifndef TB_CONFIG_MICRO_ENABLE
+//#   if defined(TB_CONFIG_OS_WINDOWS) || \
+//        defined(TB_CONFIG_LINUX_HAVE_INOTIFY_INIT) || \
+//        defined(TB_CONFIG_OS_MACOSX) || \
+//        defined(TB_CONFIG_OS_BSD)
+//#       include "impl/poller_fwatcher.c"
+//#       define TB_POLLER_ENABLE_FWATCHER
+//#   endif
+//#endif
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation

@@ -36,8 +36,10 @@
  */
 #if defined(TB_CONFIG_OS_WINDOWS)
 #   include "windows/sched_affinity.c"
-#elif defined(TB_CONFIG_OS_MACOSX)
-#   include "mach/sched_affinity.c"
+// disable macos sched_affinity to remove
+// dependency on macos sdk
+//#elif defined(TB_CONFIG_OS_MACOSX)
+//#   include "mach/sched_affinity.c"
 #elif defined(TB_CONFIG_POSIX_HAVE_SCHED_SETAFFINITY)
 #   include "posix/sched_affinity.c"
 #else
